@@ -48,14 +48,8 @@ record Wrapup() implements HttpHandler {
 		String receiver = reqJson.get("receiver").toString();
         Celebration celebration = Celebration.valueOf(reqJson.get("celebration").toString());
         Option option = Option.valueOf(reqJson.get("option").toString());
-		double itemPrice = 0.0;
-		if (!Double.valueOf(reqJson.optDouble("itemPrice")).isNaN()) {
-			itemPrice = Double.parseDouble(reqJson.get("itemPrice").toString());
-		}
-
-		if (!Double.valueOf(reqJson.optDouble("boxPrice")).isNaN()) {
-            double boxPrice = Double.parseDouble(reqJson.get("boxPrice").toString());
-        }
+		double itemPrice = reqJson.optDouble("itemPrice");
+		double boxPrice = reqJson.optDouble("boxPrice");
 
 		Postcard postcard = new Postcard(sender, receiver, celebration);
 		Intention intention = switch (option) {
@@ -65,7 +59,7 @@ record Wrapup() implements HttpHandler {
 				yield new Coupon(itemPrice, localDate, Currency.getInstance("USD"));
 			}
 			case EXPERIENCE -> new Experience(itemPrice, Currency.getInstance("EUR"));
-			case PRESENT -> new Present(itemPrice, 2.0, Currency.getInstance("RON"));
+			case PRESENT -> new Present(itemPrice, boxPrice, Currency.getInstance("RON"));
 		};
 
 		Gift gift = new Gift(postcard, intention);
