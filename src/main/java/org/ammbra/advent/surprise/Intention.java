@@ -4,5 +4,5 @@ import org.json.JSONObject;
 
 public sealed interface Intention permits Coupon, Experience, Present {
 
-	JSONObject mapToJSON();
+	JSONObject asJSON();
 }

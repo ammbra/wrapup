@@ -44,10 +44,10 @@ record Wrapup() implements HttpHandler {
 		// Read JSON string from the input stream
 		String reqData = convertToString(reqBody);
         JSONObject reqJson = new JSONObject(reqData);
-		String sender = reqJson.get("sender").toString();
-		String receiver = reqJson.get("receiver").toString();
-        Celebration celebration = Celebration.valueOf(reqJson.get("celebration").toString());
-        Option option = Option.valueOf(reqJson.get("option").toString());
+		String sender = reqJson.optString("sender");
+		String receiver = reqJson.optString("receiver");
+        Celebration celebration = Celebration.valueOf(reqJson.optString("celebration"));
+        Option option = Option.valueOf(reqJson.optString("option"));
 		double itemPrice = reqJson.optDouble("itemPrice");
 		double boxPrice = reqJson.optDouble("boxPrice");
 
@@ -65,10 +65,18 @@ record Wrapup() implements HttpHandler {
 		Gift gift = new Gift(postcard, intention);
 
 		JSONObject json = switch (gift) {
+			case Gift(Postcard p, Coupon c)
+					when (c.price() == 0.0) -> p.greet();
+			case Gift(Postcard p, Coupon c) -> gift.merge(option.name().toLowerCase());
+			case Gift(Postcard p, Experience e) -> gift.merge(option.name().toLowerCase());
+			case Gift(Postcard p, Present pr) -> gift.merge(option.name().toLowerCase());
+		};
+
+		JSONObject json = switch (gift) {
 			case Gift(Postcard p, Coupon c) when (c.price() == 0.0) -> p.greet();
-			case Gift(_, Coupon _) -> gift.composeToJSON(Option.COUPON.name().toLowerCase());
-			case Gift(_, Experience _) -> gift.composeToJSON(Option.EXPERIENCE.name().toLowerCase());
-			case Gift(_, Present _) -> gift.composeToJSON(Option.PRESENT.name().toLowerCase());
+			case Gift(_, Coupon _) -> gift.merge(option.name().toLowerCase());
+			case Gift(_, Experience _) -> gift.merge(option.name().toLowerCase());
+			case Gift(_, Present _) -> gift.merge(option.name().toLowerCase());
 		};
 
 		exchange.sendResponseHeaders(statusCode, 0);

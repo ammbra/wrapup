@@ -8,7 +8,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 		implements Intention {
 
 	@Override
-	public JSONObject mapToJSON() {
+	public JSONObject asJSON() {
 		var JSON = StringTemplate.Processor.of(
 				(StringTemplate st) ->
 						new JSONObject(st.interpolate())

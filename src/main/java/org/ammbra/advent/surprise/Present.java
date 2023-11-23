@@ -6,7 +6,7 @@ import java.util.Currency;
 public record Present(double itemPrice, double boxPrice, Currency currency) implements Intention {
 
 	@Override
-	public JSONObject mapToJSON() {
+	public JSONObject asJSON() {
 		var JSON = StringTemplate.Processor.of(
 				(StringTemplate st) -> new JSONObject(st.interpolate())
 		);

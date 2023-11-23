@@ -7,7 +7,7 @@ import java.util.Currency;
 public record Experience(double price, Currency currency) implements Intention {
 
 	@Override
-	public JSONObject mapToJSON() {
+	public JSONObject asJSON() {
 		var JSON = StringTemplate.Processor.of(
 				(StringTemplate st) -> new JSONObject(st.interpolate())
 		);
