@@ -7,6 +7,7 @@ import org.ammbra.advent.surprise.*;
 import org.ammbra.advent.surprise.Coupon;
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,12 +48,12 @@ record Wrapup() implements HttpHandler {
 		String sender = reqJson.optString("sender");
 		String receiver = reqJson.optString("receiver");
         Celebration celebration = Celebration.valueOf(reqJson.optString("celebration"));
-        Option option = Option.valueOf(reqJson.optString("option"));
+        Choice choice = Choice.valueOf(reqJson.optString("option"));
 		double itemPrice = reqJson.optDouble("itemPrice");
 		double boxPrice = reqJson.optDouble("boxPrice");
 
 		Postcard postcard = new Postcard(sender, receiver, celebration);
-		Intention intention = switch (option) {
+		Intention intention = switch (choice) {
 			case NONE -> new Coupon(0.0, null, Currency.getInstance("USD"));
 			case COUPON -> {
 				LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
@@ -65,18 +66,10 @@ record Wrapup() implements HttpHandler {
 		Gift gift = new Gift(postcard, intention);
 
 		JSONObject json = switch (gift) {
-			case Gift(Postcard p, Coupon c)
-					when (c.price() == 0.0) -> p.greet();
-			case Gift(Postcard p, Coupon c) -> gift.merge(option.name().toLowerCase());
-			case Gift(Postcard p, Experience e) -> gift.merge(option.name().toLowerCase());
-			case Gift(Postcard p, Present pr) -> gift.merge(option.name().toLowerCase());
-		};
-
-		JSONObject json = switch (gift) {
 			case Gift(Postcard p, Coupon c) when (c.price() == 0.0) -> p.greet();
-			case Gift(_, Coupon _) -> gift.merge(option.name().toLowerCase());
-			case Gift(_, Experience _) -> gift.merge(option.name().toLowerCase());
-			case Gift(_, Present _) -> gift.merge(option.name().toLowerCase());
+			case Gift(_, Coupon _) -> gift.merge(choice.name().toLowerCase());
+			case Gift(_, Experience _) -> gift.merge(choice.name().toLowerCase());
+			case Gift(_, Present _) -> gift.merge(choice.name().toLowerCase());
 		};
 
 		exchange.sendResponseHeaders(statusCode, 0);
@@ -100,5 +93,5 @@ record Wrapup() implements HttpHandler {
 	}
 }
 
-enum Option {NONE, COUPON, EXPERIENCE, PRESENT}
+enum Choice {NONE, COUPON, EXPERIENCE, PRESENT}
 
