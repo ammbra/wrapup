@@ -4,10 +4,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.ammbra.advent.surprise.*;
-import org.ammbra.advent.surprise.Coupon;
 import org.json.JSONObject;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,10 +64,17 @@ record Wrapup() implements HttpHandler {
 		Gift gift = new Gift(postcard, intention);
 
 		JSONObject json = switch (gift) {
-			case Gift(Postcard p, Coupon c) when (c.price() == 0.0) -> p.greet();
-			case Gift(_, Coupon _) -> gift.merge(choice.name().toLowerCase());
-			case Gift(_, Experience _) -> gift.merge(choice.name().toLowerCase());
-			case Gift(_, Present _) -> gift.merge(choice.name().toLowerCase());
+			case Gift(Postcard _, Postcard _) -> {
+				String message = "You cannot send two postcards!";
+				throw new UnsupportedOperationException(message);
+			}
+			case Gift(Postcard p, Coupon c)
+					when (c.price() == 0.0) -> p.asJSON();
+			case Gift(_, Coupon _), Gift(_, Experience _),
+					Gift(_, Present _) -> {
+				String option = choice.name().toLowerCase();
+				yield gift.merge(option);
+			}
 		};
 
 		exchange.sendResponseHeaders(statusCode, 0);

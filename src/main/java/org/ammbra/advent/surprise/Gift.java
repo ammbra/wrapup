@@ -7,7 +7,7 @@ public record Gift(Postcard postcard, Intention intention) {
 
 	public JSONObject merge(String option) {
 		JSONObject intentionJSON = intention.asJSON();
-		return postcard.greet().put(option, intentionJSON);
+		return postcard.asJSON().put(option, intentionJSON);
 	}
 }
 
