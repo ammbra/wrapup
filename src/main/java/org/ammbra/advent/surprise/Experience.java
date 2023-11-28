@@ -8,17 +8,13 @@ public record Experience(double price, Currency currency) implements Intention {
 
 	@Override
 	public JSONObject asJSON() {
-		var JSON = StringTemplate.Processor.of(
-				(StringTemplate st) -> new JSONObject(st.interpolate())
-		);
 
-		JSONObject json = JSON. """
+		return JSON. """
 				{
-				    "currency": "\{currency.toString()}",
+				    "currency": "\{currency}",
 				    "cost": "\{price}"
 				};
-				""";
-		return json;
+				""" ;
 	}
 
 }

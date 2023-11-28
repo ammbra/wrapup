@@ -9,14 +9,9 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	@Override
 	public JSONObject asJSON() {
-		var JSON = StringTemplate.Processor.of(
-				(StringTemplate st) ->
-						new JSONObject(st.interpolate())
-		);
-
 		return JSON. """
 				{
-				    "currency": "\{currency.toString()}",
+				    "currency": "\{currency}",
 				    "expiresOn" : "\{ expiringOn}",
 				    "cost": "\{price}"
 				};

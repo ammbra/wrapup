@@ -3,12 +3,14 @@ package org.ammbra.advent;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.ammbra.advent.request.Choice;
+import org.ammbra.advent.request.RequestConverter;
+import org.ammbra.advent.request.RequestData;
 import org.ammbra.advent.surprise.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,27 +42,25 @@ record Wrapup() implements HttpHandler {
 		// Get the request body input stream
 		InputStream reqBody = exchange.getRequestBody();
 
-		// Read JSON string from the input stream
-		String reqData = convertToString(reqBody);
-        JSONObject reqJson = new JSONObject(reqData);
-		String sender = reqJson.optString("sender");
-		String receiver = reqJson.optString("receiver");
-        Celebration celebration = Celebration.valueOf(reqJson.optString("celebration"));
-        Choice choice = Choice.valueOf(reqJson.optString("option"));
-		double itemPrice = reqJson.optDouble("itemPrice");
-		double boxPrice = reqJson.optDouble("boxPrice");
+		// Read JSON from the input stream
+		JSONObject req = RequestConverter.asJSONObject(reqBody);
+		RequestData data = RequestConverter.fromJSON(req);
 
-		Postcard postcard = new Postcard(sender, receiver, celebration);
+		double price = data.itemPrice();
+		Choice choice = data.choice();
+
 		Intention intention = switch (choice) {
 			case NONE -> new Coupon(0.0, null, Currency.getInstance("USD"));
 			case COUPON -> {
 				LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-				yield new Coupon(itemPrice, localDate, Currency.getInstance("USD"));
+				yield new Coupon(price, localDate, Currency.getInstance("USD"));
 			}
-			case EXPERIENCE -> new Experience(itemPrice, Currency.getInstance("EUR"));
-			case PRESENT -> new Present(itemPrice, boxPrice, Currency.getInstance("RON"));
+			case EXPERIENCE -> new Experience(price, Currency.getInstance("EUR"));
+			case PRESENT -> new Present(price, data.boxPrice(), Currency.getInstance("RON"));
 		};
 
+
+		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
 		Gift gift = new Gift(postcard, intention);
 
 		JSONObject json = switch (gift) {
@@ -84,19 +84,5 @@ record Wrapup() implements HttpHandler {
 		}
 
 	}
-
-	private String convertToString(InputStream reqBody) throws IOException {
-		StringBuilder sb = new StringBuilder();
-        try (InputStreamReader sr = new InputStreamReader(reqBody)) {
-            char[] buf = new char[1024];
-            int len;
-            while ((len = sr.read(buf)) > 0) {
-                sb.append(buf, 0, len);
-            }
-        }
-		return sb.toString();
-	}
 }
-
-enum Choice {NONE, COUPON, EXPERIENCE, PRESENT}
 
