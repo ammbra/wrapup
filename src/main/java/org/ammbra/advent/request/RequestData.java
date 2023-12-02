@@ -2,6 +2,7 @@ package org.ammbra.advent.request;
 
 import org.ammbra.advent.surprise.Celebration;
 
+
 public record RequestData(String sender, String receiver,
 						  Celebration celebration, Choice choice,
 						  double itemPrice, double boxPrice) {

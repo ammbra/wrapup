@@ -4,11 +4,11 @@ This application runs with Java 21.
 To start the application use the following command:
 
 ```shell
+mvn clean verify
+
 export PATH_TO_JSON=${HOME}/.m2/repository/org/json/json/20231013
         
-java -classpath target/classes:$PATH_TO_JSON/json-20231013.jar \
-        --enable-preview --source 21 \
-        src/main/java/org/ammbra/advent/Wrapup.java
+java --enable-preview -classpath target/classes:$PATH_TO_JSON/json-20231013.jar org.ammbra.advent.Wrapup
 ```
 
 Now you can try some sample requests:

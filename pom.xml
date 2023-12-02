@@ -18,6 +18,12 @@
             <artifactId>json</artifactId>
             <version>${json.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -28,6 +34,15 @@
                     <source>21</source>
                     <target>21</target>
                     <compilerArgs>--enable-preview</compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>WrapupITest.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

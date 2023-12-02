@@ -12,13 +12,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Currency;
 import java.util.concurrent.Executors;
 
+import static org.ammbra.advent.surprise.Coupon.findOffer;
 
-record Wrapup() implements HttpHandler {
+
+public record Wrapup() implements HttpHandler {
+	public static ScopedValue<Choice> VALID_REQUEST = ScopedValue.newInstance();
 
 	void main() throws IOException {
 		var server = HttpServer.create(
@@ -44,45 +44,61 @@ record Wrapup() implements HttpHandler {
 
 		// Read JSON from the input stream
 		JSONObject req = RequestConverter.asJSONObject(reqBody);
-		RequestData data = RequestConverter.fromJSON(req);
+		JSONObject response;
 
-		double price = data.itemPrice();
-		Choice choice = data.choice();
+		if (!req.isEmpty()) {
+			RequestData data = RequestConverter.fromJSON(req);
+			Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
+			Intention intention = detectIntention(postcard, data);
+			Gift gift = new Gift(postcard, intention);
+			response = process(gift, data.choice());
+		} else {
+			response =  new JSONObject("error", "Empty request");
+		}
 
-		Intention intention = switch (choice) {
-			case NONE -> new Coupon(0.0, null, Currency.getInstance("USD"));
-			case COUPON -> {
-				LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-				yield new Coupon(price, localDate, Currency.getInstance("USD"));
-			}
-			case EXPERIENCE -> new Experience(price, Currency.getInstance("EUR"));
-			case PRESENT -> new Present(price, data.boxPrice(), Currency.getInstance("RON"));
-		};
+		exchange.sendResponseHeaders(statusCode, 0);
 
+		try (var stream = exchange.getResponseBody()) {
+			stream.write(response.toString().getBytes());
+		}
+	}
 
-		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
-		Gift gift = new Gift(postcard, intention);
-
-		JSONObject json = switch (gift) {
-			case Gift(Postcard _, Postcard _) -> {
-				String message = "You cannot send two postcards!";
-				throw new UnsupportedOperationException(message);
-			}
-			case Gift(Postcard p, Coupon c)
-					when (c.price() == 0.0) -> p.asJSON();
+	JSONObject process(Gift gift, Choice choice) {
+		JSONObject response;
+		response = switch (gift) {
+			case Gift(Postcard p, Postcard _) -> p.asJSON();
+			case Gift(Postcard p, Coupon c) when (c.price() <= 0.0) -> p.asJSON();
+			case Gift(Postcard p, Experience e) when (e.price() <= 0.0) -> p.asJSON();
+			case Gift(Postcard p, Present pr) when (pr.itemPrice() <= 0.0) -> p.asJSON();
 			case Gift(_, Coupon _), Gift(_, Experience _),
 					Gift(_, Present _) -> {
 				String option = choice.name().toLowerCase();
 				yield gift.merge(option);
 			}
 		};
+		return response;
+	}
 
-		exchange.sendResponseHeaders(statusCode, 0);
+	Intention detectIntention( Postcard postcard, RequestData data) {
+		return switch (data.choice()) {
+			case NONE -> postcard;
+			case COUPON -> {
+				try {
+					yield ScopedValue.where(VALID_REQUEST, Choice.COUPON).call(() -> findOffer(data.itemPrice()));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+			case EXPERIENCE -> {
+				try {
+					yield ScopedValue.where(VALID_REQUEST, Choice.EXPERIENCE).call(() -> findOffer(data.itemPrice()));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 
-		try (var stream = exchange.getResponseBody()) {
-			stream.write(json.toString().getBytes());
-		}
-
+			case PRESENT -> Present.findOffer(data.itemPrice(), data.boxPrice());
+		};
 	}
 }
 
