@@ -46,24 +46,34 @@ record Wrapup() implements HttpHandler {
 		JSONObject req = RequestConverter.asJSONObject(reqBody);
 		RequestData data = RequestConverter.fromJSON(req);
 
-		double price = data.itemPrice();
-		Choice choice = data.choice();
+		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
+		Intention intention = extractIntention(data);
+		JSONObject json = process(postcard, intention, data.choice());
 
-		Intention intention = switch (choice) {
+		exchange.sendResponseHeaders(statusCode, 0);
+
+		try (var stream = exchange.getResponseBody()) {
+			stream.write(json.toString().getBytes());
+		}
+
+	}
+
+	Intention extractIntention(RequestData data) {
+		return switch (data.choice()) {
 			case NONE -> new Coupon(0.0, null, Currency.getInstance("USD"));
 			case COUPON -> {
 				LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-				yield new Coupon(price, localDate, Currency.getInstance("USD"));
+				yield new Coupon(data.itemPrice(), localDate, Currency.getInstance("USD"));
 			}
-			case EXPERIENCE -> new Experience(price, Currency.getInstance("EUR"));
-			case PRESENT -> new Present(price, data.boxPrice(), Currency.getInstance("RON"));
+			case EXPERIENCE -> new Experience(data.itemPrice(), Currency.getInstance("EUR"));
+			case PRESENT -> new Present(data.itemPrice(), data.boxPrice(), Currency.getInstance("RON"));
 		};
+	}
 
-
-		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
+	JSONObject process(Postcard postcard, Intention intention, Choice choice) {
 		Gift gift = new Gift(postcard, intention);
 
-		JSONObject json = switch (gift) {
+		return switch (gift) {
 			case Gift(Postcard _, Postcard _) -> {
 				String message = "You cannot send two postcards!";
 				throw new UnsupportedOperationException(message);
@@ -76,13 +86,6 @@ record Wrapup() implements HttpHandler {
 				yield gift.merge(option);
 			}
 		};
-
-		exchange.sendResponseHeaders(statusCode, 0);
-
-		try (var stream = exchange.getResponseBody()) {
-			stream.write(json.toString().getBytes());
-		}
-
 	}
 }
 
