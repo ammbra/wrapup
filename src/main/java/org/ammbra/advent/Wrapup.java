@@ -66,9 +66,9 @@ public record Wrapup() implements HttpHandler {
 	JSONObject process(Gift gift, Choice choice) {
 		return switch (gift) {
 			case Gift(Postcard p, Postcard _) -> p.asJSON();
-			case Gift(Postcard p, Coupon c) when (c.price() <= 0.0) -> p.asJSON();
-			case Gift(Postcard p, Experience e) when (e.price() <= 0.0) -> p.asJSON();
-			case Gift(Postcard p, Present pr) when (pr.itemPrice() <= 0.0) -> p.asJSON();
+			case Gift(Postcard p, Coupon c) when (c.price() == 0.0) -> p.asJSON();
+			case Gift(Postcard p, Experience e) when (e.price() == 0.0) -> p.asJSON();
+			case Gift(Postcard p, Present pr) when (pr.itemPrice() == 0.0) -> p.asJSON();
 			case Gift(_, Coupon _), Gift(_, Experience _), Gift(_, Present _) -> {
 				String option = choice.name().toLowerCase();
 				yield gift.merge(option);
@@ -98,5 +98,7 @@ public record Wrapup() implements HttpHandler {
 			case PRESENT -> Present.findOffer(data.itemPrice(), data.boxPrice());
 		};
 	}
+
+
 }
 

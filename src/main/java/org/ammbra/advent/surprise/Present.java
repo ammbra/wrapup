@@ -20,7 +20,7 @@ public record Present(double itemPrice, double boxPrice,
 				    "boxPrice": "\{boxPrice}",
 				    "packaged" : "\{ boxPrice > 0.0}",
 				    "cost": "\{(boxPrice > 0.0) ? itemPrice + boxPrice : itemPrice}"
-				};
+				}
 				""" ;
 	}
 
@@ -50,7 +50,7 @@ public record Present(double itemPrice, double boxPrice,
 	}
 
 	public static Present readOffer1(Double referencePrice, Double maxBoxPrice) {
-		double price = random.nextDouble(-5, referencePrice);
+		double price = random.nextDouble(0, referencePrice);
 		try {
 			Thread.sleep((int) price+6);
 			return new Present(price, maxBoxPrice, Currency.getInstance("RON"));
@@ -60,7 +60,7 @@ public record Present(double itemPrice, double boxPrice,
 	}
 
 	public static Present readOffer2(Double referencePrice, Double maxBoxPrice) {
-		double price = random.nextDouble(-2, referencePrice);
+		double price = random.nextDouble(0.2, referencePrice);
 		try {
 			Thread.sleep((int) price+3);
 			return new Present(price, maxBoxPrice, Currency.getInstance("RON"));
@@ -70,7 +70,7 @@ public record Present(double itemPrice, double boxPrice,
 	}
 
 	public static Present readOffer3(Double referencePrice, Double maxBoxPrice) {
-		double price = random.nextDouble(3, referencePrice);
+		double price = random.nextDouble(1, referencePrice);
 		try {
 			Thread.sleep((int) price);
 			return new Present(price, maxBoxPrice, Currency.getInstance("RON"));
@@ -80,7 +80,7 @@ public record Present(double itemPrice, double boxPrice,
 	}
 
 	public static Present readOffer4(Double referencePrice, Double maxBoxPrice) {
-		double price = random.nextDouble(0, referencePrice);
+		double price = random.nextDouble(0.4, referencePrice);
 		try {
 			Thread.sleep((int) price);
 			return new Present(price, maxBoxPrice, Currency.getInstance("RON"));

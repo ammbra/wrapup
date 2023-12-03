@@ -21,7 +21,7 @@ public record Experience(double price, Currency currency) implements Intention {
 				{
 				    "currency": "\{currency}",
 				    "cost": "\{price}"
-				};
+				}
 				""" ;
 	}
 
@@ -70,7 +70,7 @@ public record Experience(double price, Currency currency) implements Intention {
 	}
 
 	public static Experience readOffer1(Double referencePrice) {
-		double price = random.nextDouble(-10, referencePrice);
+		double price = random.nextDouble(0.01, referencePrice);
 		try {
 			Thread.sleep((int) price + 11);
 			return new Experience(price, Currency.getInstance("EUR"));
@@ -80,7 +80,7 @@ public record Experience(double price, Currency currency) implements Intention {
 	}
 
 	public static Experience readOffer2(Double referencePrice) {
-		double price = random.nextDouble(-5, referencePrice);
+		double price = random.nextDouble(0.5, referencePrice);
 		try {
 			Thread.sleep((int) price + 6);
 			return new Experience(price, Currency.getInstance("EUR"));
@@ -90,7 +90,7 @@ public record Experience(double price, Currency currency) implements Intention {
 	}
 
 	public static Experience readOffer3(Double referencePrice) {
-		double price = random.nextDouble(-3, referencePrice);
+		double price = random.nextDouble(0.3, referencePrice);
 		try {
 			Thread.sleep((int) price +  4);
 			return new Experience(price, Currency.getInstance("EUR"));
@@ -100,7 +100,7 @@ public record Experience(double price, Currency currency) implements Intention {
 	}
 
 	public static Experience readOffer4(Double referencePrice) {
-		double price = random.nextDouble(10, referencePrice);
+		double price = random.nextDouble(0.1, referencePrice);
 		try {
 			Thread.sleep((int) price);
 			return new Experience(price, Currency.getInstance("EUR"));

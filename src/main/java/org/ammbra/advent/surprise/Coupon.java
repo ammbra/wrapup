@@ -24,7 +24,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 				    "currency": "\{currency}",
 				    "expiresOn" : "\{ expiringOn}",
 				    "cost": "\{price}"
-				};
+				}
 				""" ;
 	}
 
@@ -48,7 +48,8 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 		}
 
 		public Coupon findOffer() {
-			return this.coupons.stream().toList().getFirst();
+			return this.coupons.stream().findFirst()
+					.orElseThrow(IllegalStateException::new);
 		}
 	}
 
@@ -72,7 +73,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	public static Coupon readOffer1(Double referencePrice) {
 		LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-		double price = random.nextDouble(10, referencePrice);
+		double price = random.nextDouble(1, referencePrice);
 		try {
 			Thread.sleep((int) price );
 			return new Coupon(price, localDate, Currency.getInstance("USD"));
@@ -83,7 +84,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	public static Coupon readOffer2(Double referencePrice) {
 		LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-		double price = random.nextDouble(-5, referencePrice);
+		double price = random.nextDouble(0.3, referencePrice);
 		try {
 			Thread.sleep((int) price + 6);
 			return new Coupon(price, localDate, Currency.getInstance("USD"));
@@ -94,7 +95,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	public static Coupon readOffer3(Double referencePrice) {
 		LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-		double price = random.nextDouble(0, referencePrice);
+		double price = random.nextDouble(0.1, referencePrice);
 		try {
 			Thread.sleep((int) price);
 			return new Coupon(price, localDate, Currency.getInstance("USD"));
@@ -105,7 +106,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	public static Coupon readOffer4(Double referencePrice) {
 		LocalDate localDate = LocalDateTime.now().plusYears(1).toLocalDate();
-		double price = random.nextDouble(1, referencePrice);
+		double price = random.nextDouble(0.2, referencePrice);
 		try {
 			Thread.sleep((int) price);
 			return new Coupon(price, localDate, Currency.getInstance("USD"));
