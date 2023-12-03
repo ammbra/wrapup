@@ -89,8 +89,7 @@ public record Wrapup() implements HttpHandler {
 			}
 			case EXPERIENCE -> {
 				try {
-					yield ScopedValue.where(VALID_REQUEST, Choice.EXPERIENCE)
-							.call(() -> findOffer(data.itemPrice()));
+					yield ScopedValue.where(VALID_REQUEST, Choice.EXPERIENCE).call(() -> findOffer(data.itemPrice()));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
