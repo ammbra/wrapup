@@ -14,7 +14,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 				    "currency": "\{currency}",
 				    "expiresOn" : "\{ expiringOn}",
 				    "cost": "\{price}"
-				};
+				}
 				""" ;
 	}
 }
