@@ -1,5 +1,6 @@
 package org.ammbra.advent.surprise;
 
+import org.ammbra.advent.request.Choice;
 import org.json.JSONObject;
 
 import java.time.LocalDate;
@@ -17,6 +18,14 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	private static final Random random = new Random();
 
+	public Coupon {
+		if (!VALID_REQUEST.isBound()) {
+			throw new IllegalStateException("The request state is not bound");
+		} else if (!VALID_REQUEST.get().equals(Choice.COUPON)) {
+			throw new IllegalStateException("Request state is " + VALID_REQUEST.get());
+		}
+	}
+
 	@Override
 	public JSONObject asJSON() {
 		return JSON. """
@@ -26,12 +35,6 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 				    "cost": "\{price}"
 				}
 				""" ;
-	}
-
-	public Coupon {
-		if (!VALID_REQUEST.isBound()) {
-			throw new IllegalStateException("The offer state is not bound");
-		}
 	}
 
 	public static class CouponScope extends StructuredTaskScope<Coupon> {

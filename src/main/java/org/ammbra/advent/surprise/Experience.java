@@ -1,5 +1,6 @@
 package org.ammbra.advent.surprise;
 
+import org.ammbra.advent.request.Choice;
 import org.json.JSONObject;
 import java.util.Collection;
 import java.util.Comparator;
@@ -14,6 +15,15 @@ public record Experience(double price, Currency currency) implements Intention {
 
 	private static final Random random = new Random();
 
+	public Experience {
+		if (!VALID_REQUEST.isBound()) {
+			throw new IllegalStateException("The request state is not bound");
+		} else if (!VALID_REQUEST.get()
+				.equals(Choice.EXPERIENCE)) {
+			throw new IllegalStateException("Request state is " + VALID_REQUEST.get());
+		}
+	}
+
 	@Override
 	public JSONObject asJSON() {
 
@@ -25,11 +35,6 @@ public record Experience(double price, Currency currency) implements Intention {
 				""" ;
 	}
 
-	public Experience {
-		if (!VALID_REQUEST.isBound()) {
-			throw new IllegalStateException("The offer state is not bound");
-		}
-	}
 
 	public static class ExperienceScope extends StructuredTaskScope<Experience> {
 
