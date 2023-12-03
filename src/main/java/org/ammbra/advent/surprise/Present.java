@@ -15,7 +15,7 @@ public record Present(double itemPrice, double boxPrice,
 				    "boxPrice": "\{boxPrice}",
 				    "packaged" : "\{ boxPrice > 0.0}",
 				    "cost": "\{(boxPrice > 0.0) ? itemPrice + boxPrice : itemPrice}"
-				};
+				}
 				""" ;
 	}
 }
