@@ -13,7 +13,7 @@ public record Experience(double price, Currency currency) implements Intention {
 				{
 				    "currency": "\{currency}",
 				    "cost": "\{price}"
-				};
+				}
 				""" ;
 	}
 
