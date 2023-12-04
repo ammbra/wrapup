@@ -14,8 +14,6 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-import static org.ammbra.advent.surprise.Coupon.findOffer;
-
 
 public record Wrapup() implements HttpHandler {
 	public static ScopedValue<Choice> VALID_REQUEST = ScopedValue.newInstance();
@@ -82,14 +80,14 @@ public record Wrapup() implements HttpHandler {
 			case NONE -> postcard;
 			case COUPON -> {
 				try {
-					yield ScopedValue.where(VALID_REQUEST, Choice.COUPON).call(() -> findOffer(data.itemPrice()));
+					yield ScopedValue.where(VALID_REQUEST, Choice.COUPON).call(() -> Coupon.findOffer(data.itemPrice()));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 			}
 			case EXPERIENCE -> {
 				try {
-					yield ScopedValue.where(VALID_REQUEST, Choice.EXPERIENCE).call(() -> findOffer(data.itemPrice()));
+					yield ScopedValue.where(VALID_REQUEST, Choice.EXPERIENCE).call(() -> Experience.findOffer(data.itemPrice()));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
