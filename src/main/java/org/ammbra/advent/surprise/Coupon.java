@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Currency;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.StructuredTaskScope;
@@ -19,6 +20,11 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 	private static final Random random = new Random();
 
 	public Coupon {
+		Objects.requireNonNull(currency, "currency is required");
+		if (price < 0) {
+			throw new IllegalArgumentException("Price of an item cannot be negative");
+		}
+
 		if (!VALID_REQUEST.isBound()) {
 			throw new IllegalStateException("The request state is not bound");
 		} else if (!VALID_REQUEST.get().equals(Choice.COUPON)) {

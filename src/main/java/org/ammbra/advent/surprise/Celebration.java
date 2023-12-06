@@ -8,12 +8,6 @@ public enum Celebration {
 	private final String text;
 	private final Style style;
 
-//
-//	Celebration(String text) {
-//		this.style = Style.REGULAR;
-//		this.text = text;
-//	}
-
 	Celebration(String text, Style style) {
 		this.text = text;
 		this.style = style;

@@ -2,10 +2,8 @@ package org.ammbra.advent.surprise;
 
 import org.ammbra.advent.request.Choice;
 import org.json.JSONObject;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Currency;
-import java.util.Random;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.StructuredTaskScope;
 
@@ -16,6 +14,11 @@ public record Experience(double price, Currency currency) implements Intention {
 	private static final Random random = new Random();
 
 	public Experience {
+		Objects.requireNonNull(currency, "currency is required");
+		if (price < 0) {
+			throw new IllegalArgumentException("Price of an item cannot be negative");
+		}
+
 		if (!VALID_REQUEST.isBound()) {
 			throw new IllegalStateException("The request state is not bound");
 		} else if (!VALID_REQUEST.get()
