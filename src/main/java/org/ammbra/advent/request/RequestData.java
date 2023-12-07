@@ -1,6 +1,6 @@
 package org.ammbra.advent.request;
 
-import org.ammbra.advent.surprise.Celebration;
+import org.ammbra.advent.surprise.decor.Celebration;
 
 
 public record RequestData(String sender, String receiver,

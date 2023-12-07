@@ -1,7 +1,7 @@
 package org.ammbra.advent;
 
 import org.ammbra.advent.request.Choice;
-import org.ammbra.advent.surprise.Celebration;
+import org.ammbra.advent.surprise.decor.Celebration;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -142,12 +142,11 @@ public class WrapupITest {
 				.map(request -> client.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
 				.toList();
 
-		CompletableFuture<List<HttpResponse<String>>> combinedFutures = CompletableFuture
+		return CompletableFuture
 				.allOf(completableFutures.toArray(new CompletableFuture[0]))
 				.thenApply(_ -> completableFutures.stream()
 						.map(CompletableFuture::join)
 						.toList());
-		return combinedFutures;
 	}
 
 

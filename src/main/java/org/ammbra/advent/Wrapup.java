@@ -7,6 +7,7 @@ import org.ammbra.advent.request.Choice;
 import org.ammbra.advent.request.RequestConverter;
 import org.ammbra.advent.request.RequestData;
 import org.ammbra.advent.surprise.*;
+import org.ammbra.advent.surprise.Intention;
 import org.json.JSONObject;
 
 import java.io.IOException;

@@ -1,5 +1,6 @@
 package org.ammbra.advent.surprise;
 
+import org.ammbra.advent.surprise.decor.Celebration;
 import org.json.JSONObject;
 
 import java.util.Objects;

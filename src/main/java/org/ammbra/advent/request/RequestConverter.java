@@ -1,6 +1,6 @@
 package org.ammbra.advent.request;
 
-import org.ammbra.advent.surprise.Celebration;
+import org.ammbra.advent.surprise.decor.Celebration;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +30,6 @@ public final class RequestConverter {
 					case "itemPrice" -> builder.itemPrice(Math.abs(jsonObject.optDouble(key)));
 					case "boxPrice" -> builder.boxPrice(Math.abs(jsonObject.optDouble(key)));
 				}
-
 			}
 		}
 

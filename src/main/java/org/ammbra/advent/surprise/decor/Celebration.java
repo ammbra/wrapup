@@ -1,4 +1,4 @@
-package org.ammbra.advent.surprise;
+package org.ammbra.advent.surprise.decor;
 
 public enum Celebration {
 	BIRTHDAY("Happy Birthday!", Style.ITALIC),
