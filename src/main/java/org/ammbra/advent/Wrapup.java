@@ -18,7 +18,7 @@ import java.util.Currency;
 import java.util.concurrent.Executors;
 
 
-record Wrapup() implements HttpHandler {
+class Wrapup implements HttpHandler {
 
 	void main() throws IOException {
 		var server = HttpServer.create(
