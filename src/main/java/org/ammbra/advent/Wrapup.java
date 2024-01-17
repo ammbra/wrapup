@@ -3,11 +3,11 @@ package org.ammbra.advent;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import io.github.ralfspoeth.json.Element;
 import org.ammbra.advent.request.Choice;
 import org.ammbra.advent.request.RequestConverter;
 import org.ammbra.advent.request.RequestData;
 import org.ammbra.advent.surprise.*;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,12 +43,12 @@ class Wrapup implements HttpHandler {
 		InputStream reqBody = exchange.getRequestBody();
 
 		// Read JSON from the input stream
-		JSONObject req = RequestConverter.asJSONObject(reqBody);
-		RequestData data = RequestConverter.fromJSON(req);
+		var req = RequestConverter.parse(reqBody);
+		RequestData data = RequestConverter.convert(req);
 
 		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
 		Intention intention = extractIntention(data);
-		JSONObject json = process(postcard, intention, data.choice());
+		var json = process(postcard, intention, data.choice());
 
 		exchange.sendResponseHeaders(statusCode, 0);
 
@@ -70,7 +70,7 @@ class Wrapup implements HttpHandler {
 		};
 	}
 
-	JSONObject process(Postcard postcard, Intention intention, Choice choice) {
+	Element process(Postcard postcard, Intention intention, Choice choice) {
 		Gift gift = new Gift(postcard, intention);
 
 		return switch (gift) {
@@ -79,7 +79,7 @@ class Wrapup implements HttpHandler {
 				throw new UnsupportedOperationException(message);
 			}
 			case Gift(Postcard p, Coupon c)
-					when (c.price() == 0.0) -> p.asJSON();
+					when (c.price() == 0.0) -> p.toJsonObject();
 			case Gift(_, Coupon _), Gift(_, Experience _),
 					Gift(_, Present _) -> {
 				String option = choice.name().toLowerCase();

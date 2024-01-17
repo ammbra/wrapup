@@ -1,7 +1,10 @@
 package org.ammbra.advent.surprise;
 
-import org.json.JSONObject;
+import io.github.ralfspoeth.json.JsonObject;
+
 import java.util.Objects;
+
+import static io.github.ralfspoeth.json.Aggregate.objectBuilder;
 
 public record Postcard(String sender, String receiver, Celebration celebration) implements Intention {
 
@@ -11,14 +14,12 @@ public record Postcard(String sender, String receiver, Celebration celebration) 
 		Objects.requireNonNull(celebration, "celebration is required");
 	}
 
-	public JSONObject asJSON() {
-		return JSON. """
-				{
-					"sender": "\{sender}",
-				    "receiver": "\{receiver}",
-				    "message": "\{celebration.getText()}"
-				}
-				""" ;
+	public JsonObject toJsonObject() {
+		return objectBuilder()
+				.named("sender", sender)
+				.named("receiver", receiver)
+				.named("celebration", celebration)
+				.build();
 	}
 
 }

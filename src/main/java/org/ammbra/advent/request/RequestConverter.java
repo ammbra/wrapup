@@ -1,60 +1,65 @@
 package org.ammbra.advent.request;
 
+import io.github.ralfspoeth.json.*;
+import io.github.ralfspoeth.json.io.JsonReader;
 import org.ammbra.advent.surprise.Celebration;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class RequestConverter {
-	static Logger logger = Logger.getLogger(RequestConverter.class.getName());
 
-	private RequestConverter() {
-	}
+    private RequestConverter() {
+    }
 
-	public static RequestData fromJSON(JSONObject jsonObject) {
-		RequestData.Builder builder = new RequestData.Builder();
+    public static RequestData convert(JsonObject jsonObject) {
+        RequestData.Builder builder = new RequestData.Builder();
 
-		if (jsonObject.keySet().containsAll(Arrays.asList("sender", "receiver", "celebration", "option"))) {
-			for (String key : jsonObject.keySet()) {
-				switch (key) {
-					case "sender" -> builder.sender(jsonObject.optString(key));
-					case "receiver" -> builder.receiver(jsonObject.optString(key));
-					case "celebration" -> builder.celebration(jsonObject.optEnum(Celebration.class, key));
-					case "option" -> builder.choice(jsonObject.optEnum(Choice.class, key));
-					case "itemPrice" -> builder.itemPrice(Math.abs(jsonObject.optDouble(key)));
-					case "boxPrice" -> builder.boxPrice(Math.abs(jsonObject.optDouble(key)));
-				}
+        if (jsonObject.members().keySet().containsAll(Arrays.asList("sender", "receiver", "celebration", "option"))) {
+            for (String key : jsonObject.members().keySet()) {
+                var value = jsonObject.members().get(key);
+                switch (key) {
+                    case "sender" -> builder.sender(toString(value));
+                    case "receiver" -> builder.receiver(toString(value));
+                    case "celebration" -> builder.celebration(toEnum(Celebration.class, value));
+                    case "option" -> builder.choice(toEnum(Choice.class, value));
+                    case "itemPrice" -> builder.itemPrice(Math.abs(toDouble(value)));
+                    case "boxPrice" -> builder.boxPrice(Math.abs(toDouble(value)));
+                }
+            }
+        }
+        return builder.build();
+    }
 
-			}
-		}
+    public static <E extends Enum<E>> E toEnum(Class<E> enumClass, Element elem) {
+        return switch (elem) {
+            case JsonString str -> Enum.valueOf(enumClass, str.value().toUpperCase());
+			case null -> null;
+            default -> throw new RuntimeException(STR."cannot convert \{elem} to Choice");
+        };
+    }
 
-		return builder.build();
-	}
+    public static double toDouble(Element elem) {
+        return switch(elem) {
+            case JsonNumber num -> num.numVal();
+            case JsonString str -> Double.parseDouble(str.value());
+            default -> throw new RuntimeException(STR."cannot convert \{elem} to double");
+        };
+    }
 
-	public static JSONObject asJSONObject(InputStream reqBody) throws IOException {
-		JSONObject json = null;
-		StringBuilder sb = new StringBuilder();
-		try (InputStreamReader sr = new InputStreamReader(reqBody)) {
-			char[] buf = new char[1024];
-			int len;
-			while ((len = sr.read(buf)) > 0) {
-				sb.append(buf, 0, len);
-			}
-		}
+    public static String toString(Element elem) {
+        return switch (elem) {
+            case null -> "";
+            default -> elem.toString();
+        };
+    }
 
-		try {
-			json = new JSONObject(sb.toString());
-		} catch (JSONException jsonException) {
-			logger.log(Level.SEVERE, jsonException.toString());
-		}
-
-		return json;
-	}
+    public static JsonObject parse(InputStream reqBody) throws IOException {
+        try (var r = new JsonReader(new InputStreamReader(reqBody))) {
+            return (JsonObject)r.readElement();
+        }
+    }
 
 }
