@@ -4,13 +4,17 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import io.github.ralfspoeth.json.Element;
+import io.github.ralfspoeth.json.JsonObject;
+import io.github.ralfspoeth.json.io.JsonReader;
+import io.github.ralfspoeth.json.io.JsonWriter;
 import org.ammbra.advent.request.Choice;
 import org.ammbra.advent.request.RequestConverter;
 import org.ammbra.advent.request.RequestData;
 import org.ammbra.advent.surprise.*;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,22 +44,21 @@ class Wrapup implements HttpHandler {
 		}
 
 		// Get the request body input stream
-		InputStream reqBody = exchange.getRequestBody();
+		try(var rdr = new JsonReader(new InputStreamReader(exchange.getRequestBody()));
+			var wrtr = JsonWriter.createDefaultWriter(new OutputStreamWriter(exchange.getResponseBody()))
+		)
+		{
+			var req = (JsonObject)rdr.readElement();
+			var data = RequestConverter.convert(req);
 
-		// Read JSON from the input stream
-		var req = RequestConverter.parse(reqBody);
-		RequestData data = RequestConverter.convert(req);
+			Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
+			Intention intention = extractIntention(data);
+			var json = process(postcard, intention, data.choice());
 
-		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
-		Intention intention = extractIntention(data);
-		var json = process(postcard, intention, data.choice());
+			exchange.sendResponseHeaders(statusCode, 0);
 
-		exchange.sendResponseHeaders(statusCode, 0);
-
-		try (var stream = exchange.getResponseBody()) {
-			stream.write(json.toString().getBytes());
+			wrtr.write(json);
 		}
-
 	}
 
 	Intention extractIntention(RequestData data) {
