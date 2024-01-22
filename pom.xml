@@ -7,21 +7,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java>21</java>
-        <json.version>20231013</json.version>
-        <exec.mainClass>org.ammbra.advent.Wrapup</exec.mainClass>
-        <junit-jupiter-api.version>5.7.0</junit-jupiter-api.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.json</groupId>
+            <groupId>io.github.ralfspoeth</groupId>
             <artifactId>json</artifactId>
-            <version>${json.version}</version>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit-jupiter-api.version}</version>
+            <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

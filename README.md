@@ -4,9 +4,10 @@ This application runs with Java 21.
 To start the application use the following command:
 
 ```shell
-export PATH_TO_JSON=${HOME}/.m2/repository/org/json/json/20231013
+export PATH_TO_JSON=${HOME}/.m2/repository/io/github/ralfspoeth/json/1.0.8
+export PATH_TO_BASIX=${HOME}/.m2/repository/io/github/ralfspoeth/basix/1.0.8
         
-java -classpath target/classes:$PATH_TO_JSON/json-20231013.jar \
+java -classpath target/classes:$PATH_TO_JSON/json-1.0.8.jar:$PATH_TO_BASIX/basix-1.0.8.jar \
         --enable-preview --source 21 \
         src/main/java/org/ammbra/advent/Wrapup.java
 ```

@@ -1,9 +1,12 @@
 package org.ammbra.advent.surprise;
 
-import org.json.JSONObject;
+import io.github.ralfspoeth.json.JsonObject;
+
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.Objects;
+
+import static io.github.ralfspoeth.json.Aggregate.objectBuilder;
 
 public record Coupon(double price, LocalDate expiringOn, Currency currency)
 		implements Intention {
@@ -16,13 +19,11 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 	}
 
 	@Override
-	public JSONObject asJSON() {
-		return JSON. """
-				{
-				    "currency": "\{currency}",
-				    "expiresOn" : "\{ expiringOn}",
-				    "cost": "\{price}"
-				}
-				""" ;
+	public JsonObject toJsonObject() {
+		return objectBuilder()
+				.named("currency", currency)
+				.named("expiresOn", expiringOn)
+				.named("cost", price)
+				.build();
 	}
 }
