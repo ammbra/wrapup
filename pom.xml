@@ -7,7 +7,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java>21</java>
-        <exec.mainClass>org.ammbra.advent.Wrapup</exec.mainClass>
     </properties>
 
     <dependencies>
