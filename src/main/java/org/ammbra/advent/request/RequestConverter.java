@@ -1,18 +1,11 @@
 package org.ammbra.advent.request;
 
 import org.ammbra.advent.surprise.Celebration;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class RequestConverter {
-	static Logger logger = Logger.getLogger(RequestConverter.class.getName());
 
 	private RequestConverter() {
 	}
@@ -35,26 +28,6 @@ public final class RequestConverter {
 		}
 
 		return builder.build();
-	}
-
-	public static JSONObject asJSONObject(InputStream reqBody) throws IOException {
-		JSONObject json = null;
-		StringBuilder sb = new StringBuilder();
-		try (InputStreamReader sr = new InputStreamReader(reqBody)) {
-			char[] buf = new char[1024];
-			int len;
-			while ((len = sr.read(buf)) > 0) {
-				sb.append(buf, 0, len);
-			}
-		}
-
-		try {
-			json = new JSONObject(sb.toString());
-		} catch (JSONException jsonException) {
-			logger.log(Level.SEVERE, jsonException.toString());
-		}
-
-		return json;
 	}
 
 }

@@ -12,7 +12,7 @@ public record Postcard(String sender, String receiver, Celebration celebration) 
 	}
 
 	public JSONObject asJSON() {
-		return JSON. """
+		return JSON_VALIDATE. """
 				{
 					"sender": "\{sender}",
 				    "receiver": "\{receiver}",

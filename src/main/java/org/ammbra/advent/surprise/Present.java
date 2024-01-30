@@ -19,7 +19,7 @@ public record Present(double itemPrice, double boxPrice,
 	@Override
 	public JSONObject asJSON() {
 
-		return JSON. """
+		return JSON_VALIDATE. """
 				{
 				    "currency": "\{currency}",
 				    "boxPrice": "\{boxPrice}",

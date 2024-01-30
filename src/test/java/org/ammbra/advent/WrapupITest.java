@@ -117,7 +117,8 @@ public class WrapupITest {
 									"receiver": "Duke",
 									"celebration": "\{ celebration }",
 									"option" : "\{ Choice.PRESENT }",
-									"itemPrice": "\{ random.nextDouble(5, 10) }"
+									"itemPrice": "\{ random.nextDouble(5, 10) }",
+									"boxPrice": "\{ random.nextDouble(0.2, 0.7) }",
 								}
 							""" ;
 			HttpRequest request = HttpRequest.newBuilder()

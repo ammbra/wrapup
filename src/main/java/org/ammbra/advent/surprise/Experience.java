@@ -17,7 +17,7 @@ public record Experience(double price, Currency currency) implements Intention {
 	@Override
 	public JSONObject asJSON() {
 
-		return JSON. """
+		return JSON_VALIDATE. """
 				{
 				    "currency": "\{currency}",
 				    "cost": "\{price}"

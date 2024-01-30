@@ -9,13 +9,17 @@ import org.ammbra.advent.request.RequestData;
 import org.ammbra.advent.surprise.*;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 
 class Wrapup implements HttpHandler {
@@ -43,7 +47,9 @@ class Wrapup implements HttpHandler {
 		InputStream reqBody = exchange.getRequestBody();
 
 		// Read JSON from the input stream
-		JSONObject req = RequestConverter.asJSONObject(reqBody);
+		String body = new BufferedReader(new InputStreamReader(reqBody, StandardCharsets.UTF_8))
+				.lines().collect(Collectors.joining("\n"));
+		JSONObject req = new JSONObject(body);
 		RequestData data = RequestConverter.fromJSON(req);
 
 		Postcard postcard = new Postcard(data.sender(), data.receiver(), data.celebration());
