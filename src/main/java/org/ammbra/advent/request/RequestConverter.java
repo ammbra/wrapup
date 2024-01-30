@@ -36,24 +36,4 @@ public final class RequestConverter {
 		return builder.build();
 	}
 
-	public static JSONObject asJSONObject(InputStream reqBody) throws IOException {
-		JSONObject json = null;
-		StringBuilder sb = new StringBuilder();
-		try (InputStreamReader sr = new InputStreamReader(reqBody)) {
-			char[] buf = new char[1024];
-			int len;
-			while ((len = sr.read(buf)) > 0) {
-				sb.append(buf, 0, len);
-			}
-		}
-
-		try {
-			json = new JSONObject(sb.toString());
-		} catch (JSONException jsonException) {
-			logger.log(Level.SEVERE, jsonException.toString());
-		}
-
-		return json;
-	}
-
 }

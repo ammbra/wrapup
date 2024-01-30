@@ -7,13 +7,17 @@ import org.ammbra.advent.request.Choice;
 import org.ammbra.advent.request.RequestConverter;
 import org.ammbra.advent.request.RequestData;
 import org.ammbra.advent.surprise.*;
-import org.ammbra.advent.surprise.Intention;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.joining;
 
 
 public record Wrapup() implements HttpHandler {
@@ -42,7 +46,9 @@ public record Wrapup() implements HttpHandler {
 		InputStream reqBody = exchange.getRequestBody();
 
 		// Read JSON from the input stream
-		JSONObject req = RequestConverter.asJSONObject(reqBody);
+		String body = new BufferedReader(new InputStreamReader(reqBody, UTF_8))
+				.lines().collect(joining("\n"));
+		JSONObject req = new JSONObject(body);
 		JSONObject response;
 
 		if (!req.isEmpty()) {

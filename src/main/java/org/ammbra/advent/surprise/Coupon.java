@@ -34,7 +34,7 @@ public record Coupon(double price, LocalDate expiringOn, Currency currency)
 
 	@Override
 	public JSONObject asJSON() {
-		return JSON. """
+		return JSON_VALIDATE. """
 				{
 				    "currency": "\{currency}",
 				    "expiresOn" : "\{ expiringOn}",

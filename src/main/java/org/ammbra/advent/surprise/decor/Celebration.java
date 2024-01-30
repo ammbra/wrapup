@@ -1,23 +1,23 @@
 package org.ammbra.advent.surprise.decor;
 
 public enum Celebration {
-	BIRTHDAY("Happy Birthday!", Style.ITALIC),
-	CURRENT_YEAR("Hope you a had a great 2023!", Style.REGULAR),
-	NEW_YEAR("Happy New Year!", Style.BOLD);
+	BIRTHDAY("Happy Birthday!", Color.RED),
+	CURRENT_YEAR("Hope you a had a great 2023!", Weight.REGULAR),
+	NEW_YEAR("Happy New Year!", Weight.BOLD);
 
 	private final String text;
-	private final Style style;
+	private final Font font;
 
-	Celebration(String text, Style style) {
+	Celebration(String text, Font font) {
 		this.text = text;
-		this.style = style;
+		this.font = font;
 	}
 
 	public String getText() {
 		return text;
 	}
 
-	public Style getStyle() {
-		return style;
+	public Font getFont() {
+		return font;
 	}
 }
