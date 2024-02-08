@@ -16,16 +16,14 @@ public sealed interface Intention
 				String quote = "\"";
 				List<Object> filtered = new ArrayList<>();
 				for (Object value : st.values()) {
-					if (value instanceof String str) {
-						if (str.contains(quote)) {
-							throw new JSONException("Injection vulnerability");
-						}
-						filtered.add(str);
-					} else if (value instanceof Number || value instanceof Boolean ||
-							value instanceof Currency || value instanceof LocalDate) {
-						filtered.add(value);
-					} else {
-						throw new JSONException("Invalid value type");
+					switch (value) {
+						case String str when str.contains(quote) -> throw new JSONException("Injection vulnerability");
+						case String str -> filtered.add(str);
+						case Number n -> filtered.add(n);
+						case Boolean b -> filtered.add(b);
+						case Currency c -> filtered.add(c);
+						case LocalDate date -> filtered.add(date);
+						case Object _ -> throw new JSONException("Invalid value type");
 					}
 				}
 				String jsonSource =
