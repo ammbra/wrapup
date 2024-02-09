@@ -20,7 +20,7 @@ public record Postcard(String sender, String receiver, Celebration celebration) 
 				{
 					"sender": "\{sender}",
 				    "receiver": "\{receiver}",
-				    "message": "\{celebration.getText()}"
+				    "message": "\{celebration.getText()}",
 				    "style" : "\{celebration.getFont()}"
 				}
 				""" ;

@@ -18,7 +18,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class WrapupITest {
-	
+
+	@Test
+	void testMainInvalidPostcard() throws ExecutionException, InterruptedException {
+		List<HttpRequest> requests = new ArrayList<>();
+		for (Celebration celebration : Celebration.values()) {
+			String data = STR. """
+								{
+									"sender": [{
+									   "device_name": "Phone",
+									   "key_category": 1
+									}, {
+									   "power_state": 3,
+									   "reason": 1
+									}],
+									"receiver": "Duke",
+									"celebration": "\{ celebration}",
+									"option" : "Invalid"
+								}
+							""" ;
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create("http://127.0.0.1:8081"))
+					.POST(HttpRequest.BodyPublishers.ofString(data))
+					.build();
+			requests.add(request);
+		}
+
+		try (HttpClient client = HttpClient.newBuilder().build()) {
+			CompletableFuture<List<HttpResponse<String>>> combinedFutures = toCombinedFuture(requests, client);
+			combinedFutures.get().forEach((response) -> {
+				assertEquals(400, response.statusCode());
+				assertNotNull(response.body());
+			});
+		}
+	}
+
+
 	@Test
 	void testMainOnlyPostcard() throws ExecutionException, InterruptedException {
 		List<HttpRequest> requests = new ArrayList<>();

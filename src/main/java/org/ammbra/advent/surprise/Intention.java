@@ -1,5 +1,6 @@
 package org.ammbra.advent.surprise;
 
+import org.ammbra.advent.surprise.decor.Font;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,25 +17,30 @@ public sealed interface Intention
 				String quote = "\"";
 				List<Object> filtered = validate(st, quote);
 				String jsonSource = StringTemplate.interpolate(st.fragments(), filtered);
-				return new JSONObject(jsonSource);
+				JSONObject json = new JSONObject(jsonSource);
+				return json;
 			};
 
 	private static List<Object> validate(StringTemplate st, String quote) {
-		List<Object> filtered = new ArrayList<>();
-		for (Object value : st.values()) {
-			if (value instanceof String str) {
-				if (str.contains(quote)) {
-					throw new JSONException("Injection vulnerability");
-				}
-				filtered.add(str);
-			} else if (value instanceof Number || value instanceof Boolean ||
-					value instanceof Currency || value instanceof LocalDate) {
-				filtered.add(value);
-			} else {
-				throw new JSONException("Invalid value type");
-			}
-		}
-		return filtered;
+		var mapping = st.values().stream()
+				.map(value -> switch (value) {
+					case Number n -> n;
+					case Boolean b -> b;
+					case Font f -> f;
+					case Currency c -> c;
+					case LocalDate date -> date;
+					case String str when str.contains(quote) ->
+							new JSONException("Injection vulnerability");
+					case String str -> str;
+					case Object _ -> new JSONException("Invalid value type");
+				}).toList();
+		var exceptions = mapping.stream()
+				.filter(RuntimeException.class::isInstance)
+				.map(JSONException.class::cast) // could be RuntimeException
+				.toList();
+		var exception = new JSONException("Contains all the exceptions");
+		exceptions.forEach(exception::addSuppressed);
+		return new ArrayList<>(mapping);
 	}
 
 	JSONObject asJSON();

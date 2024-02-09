@@ -61,6 +61,9 @@ public record Wrapup() implements HttpHandler {
 			response =  new JSONObject("error", "Empty request");
 		}
 
+		if (response.toMap().values().stream()
+				.anyMatch(val -> val.toString().contains("JSONException")))
+			statusCode = 400;
 		exchange.sendResponseHeaders(statusCode, 0);
 
 		try (var stream = exchange.getResponseBody()) {
