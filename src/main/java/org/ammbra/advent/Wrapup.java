@@ -56,6 +56,10 @@ class Wrapup implements HttpHandler {
 		Intention intention = extractIntention(data);
 		JSONObject json = process(postcard, intention, data.choice());
 
+		if (json.toMap().values().stream()
+				.anyMatch(val -> val.toString().contains("JSONException")))
+			statusCode = 400;
+
 		exchange.sendResponseHeaders(statusCode, 0);
 
 		try (var stream = exchange.getResponseBody()) {
